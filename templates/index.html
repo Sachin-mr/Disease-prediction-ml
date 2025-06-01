@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediPredict - Disease Prediction System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: var(--light-color);
+        }
+        
+        /* Main Content */
+        main {
+            padding: 2rem 0;
+        }
+        
+        .hero {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        /* Prediction Section */
+        .prediction-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .prediction-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-section, .output-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        input[type="text"], select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        input[type="text"]:focus, select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+        
+        .symptom-selectors {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .model-selector {
+            display: flex;
+            margin: 1.5rem 0;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .model-option {
+            background-color: #f5f7fa;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 1rem;
+            cursor: pointer;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .model-option.active {
+            border-color: var(--secondary-color);
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .model-option:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .model-option h4 {
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .model-option .accuracy {
+            font-size: 0.9rem;
+            color: var(--accent-color);
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--secondary-color);
+        }
+        
+        .btn-danger {
+            background: var(--accent-color);
+        }
+        
+        /* Results Section */
+        .results {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            background-color: #f8f9fa;
+            border: 1px dashed #ddd;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .results h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .disease-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin: 1rem 0;
+        }
+        
+        .model-used {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        /* Spinner */
+        .spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Accuracy Chart */
+        .accuracy-chart {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: var(--shadow);
+        }
+        
+        .accuracy-chart h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            text-align: center;
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 2rem;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .footer-content p {
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>MediPredict</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <section class="hero">
+            <h1>Disease Prediction using Machine Learning</h1>
+            <p>Enter your symptoms below to get a prediction about your possible condition using advanced AI algorithms.</p>
+        </section>
+        
+        <div class="prediction-container">
+            <div class="input-section">
+                <h2 class="section-title">Patient Information</h2>
+                <div class="form-group">
+                    <label for="patient-name">Patient Name</label>
+                    <input type="text" id="patient-name" placeholder="Enter patient name">
+                </div>
+                
+                <h3 class="section-title">Select Symptoms</h3>
+                <p>Please select up to 5 symptoms that you are experiencing:</p>
+                
+                <div class="symptom-selectors">
+                    <div class="form-group">
+                        <label for="symptom1">Symptom 1</label>
+                        <select id="symptom1">
+                            <option value="">Select Symptom</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="symptom2">Symptom 2</label>
+                        <select id="symptom2">
+                            <option value="">Select Symptom</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="symptom3">Symptom 3</label>
+                        <select id="symptom3">
+                            <option value="">Select Symptom</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="symptom4">Symptom 4</label>
+                        <select id="symptom4">
+                            <option value="">Select Symptom</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="symptom5">Symptom 5</label>
+                        <select id="symptom5">
+                            <option value="">Select Symptom</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <h3 class="section-title">Select Prediction Model</h3>
+                <div class="model-selector">
+                    <div class="model-option active" data-model="DecisionTree">
+                        <h4>Decision Tree</h4>
+                        <div class="accuracy" id="dt-accuracy">Accuracy: Loading...</div>
+                    </div>
+                    
+                    <div class="model-option" data-model="RandomForest">
+                        <h4>Random Forest</h4>
+                        <div class="accuracy" id="rf-accuracy">Accuracy: Loading...</div>
+                    </div>
+                    
+                    <div class="model-option" data-model="NaiveBayes">
+                        <h4>Naive Bayes</h4>
+                        <div class="accuracy" id="nb-accuracy">Accuracy: Loading...</div>
+                    </div>
+                </div>
+                
+                <button id="predict-btn" class="btn btn-primary btn-block">Predict Disease</button>
+                <button id="reset-btn" class="btn btn-danger btn-block" style="margin-top: 10px;">Reset</button>
+            </div>
+            
+            <div class="output-section">
+                <h2 class="section-title">Prediction Results</h2>
+                
+                <div class="spinner" id="loading-spinner"></div>
+                
+                <div class="results" id="result-container">
+                    <h3>Diagnosis Result</h3>
+                    <div class="disease-name" id="disease-result">Not predicted yet</div>
+                    <div class="model-used" id="model-used">Please fill in symptoms and click Predict</div>
+                </div>
+                
+                <div class="accuracy-chart">
+                    <h3>Model Accuracy Comparison</h3>
+                    <div class="chart-container" id="accuracy-chart"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="footer-content">
+            <p>© 2025 MediPredict - Disease Prediction System using Machine Learning</p>
+            <p>This tool is for educational purposes only and is not a substitute for professional medical advice.</p>
+        </div>
+    </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // DOM Elements
+        const symptomSelects = [
+            document.getElementById('symptom1'),
+            document.getElementById('symptom2'),
+            document.getElementById('symptom3'),
+            document.getElementById('symptom4'),
+            document.getElementById('symptom5')
+        ];
+        
+        const modelOptions = document.querySelectorAll('.model-option');
+        const predictBtn = document.getElementById('predict-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const resultContainer = document.getElementById('result-container');
+        const diseaseResult = document.getElementById('disease-result');
+        const modelUsed = document.getElementById('model-used');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const dtAccuracy = document.getElementById('dt-accuracy');
+        const rfAccuracy = document.getElementById('rf-accuracy');
+        const nbAccuracy = document.getElementById('nb-accuracy');
+        const chartContainer = document.getElementById('accuracy-chart');
+        
+        // Variables
+        let selectedModel = 'DecisionTree';
+        let accuracyData = {};
+        let accuracyChart = null;
+        
+        // Initialize the application
+        async function initApp() {
+            try {
+                await loadSymptoms();
+                await loadAccuracyData();
+                initChart();
+                setupEventListeners();
+            } catch (error) {
+                console.error('Error initializing app:', error);
+                alert('Failed to initialize the application. Please refresh the page.');
+            }
+        }
+        
+        // Load symptoms from API
+        async function loadSymptoms() {
+            const response = await fetch('/api/symptoms');
+            const symptoms = await response.json();
+            
+            symptomSelects.forEach(select => {
+                symptoms.forEach(symptom => {
+                    const option = document.createElement('option');
+                    option.value = symptom;
+                    option.textContent = symptom.replace(/_/g, ' ');
+                    select.appendChild(option);
+                });
+            });
+        }
+        
+        // Load model accuracy data
+        async function loadAccuracyData() {
+            const response = await fetch('/api/accuracy');
+            accuracyData = await response.json();
+            
+            // Update accuracy display
+            dtAccuracy.textContent = `Accuracy: ${accuracyData.DecisionTree}%`;
+            rfAccuracy.textContent = `Accuracy: ${accuracyData.RandomForest}%`;
+            nbAccuracy.textContent = `Accuracy: ${accuracyData.NaiveBayes}%`;
+        }
+        
+        // Initialize accuracy chart
+        function initChart() {
+            const ctx = document.createElement('canvas');
+            chartContainer.appendChild(ctx);
+            
+            accuracyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(accuracyData),
+                    datasets: [{
+                        label: 'Model Accuracy (%)',
+                        data: Object.values(accuracyData),
+                        backgroundColor: [
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(46, 204, 113, 0.7)',
+                            'rgba(231, 76, 60, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(52, 152, 219, 1)',
+                            'rgba(46, 204, 113, 1)',
+                            'rgba(231, 76, 60, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Model selection
+            modelOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    // Remove active class from all options
+                    modelOptions.forEach(opt => opt.classList.remove('active'));
+                    
+                    // Add active class to selected option
+                    option.classList.add('active');
+                    
+                    // Update selected model
+                    selectedModel = option.dataset.model;
+                });
+            });
+            
+            // Predict button
+            predictBtn.addEventListener('click', predictDisease);
+            
+            // Reset button
+            resetBtn.addEventListener('click', resetForm);
+        }
+        
+        // Predict disease
+        async function predictDisease() {
+            // Get selected symptoms
+            const selectedSymptoms = symptomSelects
+                .map(select => select.value)
+                .filter(value => value !== '');
+            
+            // Validate input
+            if (selectedSymptoms.length === 0) {
+                alert('Please select at least one symptom.');
+                return;
+            }
+            
+            // Show loading spinner
+            loadingSpinner.style.display = 'block';
+            resultContainer.classList.remove('show');
+            
+            try {
+                // Make API request
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        symptoms: selectedSymptoms,
+                        model: selectedModel
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading spinner
+                loadingSpinner.style.display = 'none';
+                
+                // Display results
+                if (data.error) {
+                    alert(`Error: ${data.error}`);
+                } else {
+                    diseaseResult.textContent = data.prediction;
+                    modelUsed.textContent = `Predicted using ${data.model} model with ${accuracyData[data.model]}% accuracy`;
+                    resultContainer.classList.add('show');
+                }
+            } catch (error) {
+                console.error('Error predicting disease:', error);
+                loadingSpinner.style.display = 'none';
+                alert('Failed to predict disease. Please try again.');
+            }
+        }
+        
+        // Reset form
+        function resetForm() {
+            // Clear symptoms
+            symptomSelects.forEach(select => {
+                select.selectedIndex = 0;
+            });
+            
+            // Reset patient name
+            document.getElementById('patient-name').value = '';
+            
+            // Hide results
+            resultContainer.classList.remove('show');
+        }
+        
+        // Initialize the app when the page loads
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
